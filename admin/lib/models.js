@@ -271,6 +271,13 @@ const InventoryLogSchema = new Schema(
 );
 export const InventoryLog = model('InventoryLog', InventoryLogSchema);
 
+// ---------- admin login (password set from the panel; overrides ADMIN_PASSWORD) ----------
+const AdminCredentialSchema = new Schema(
+  { _id: String, salt: { type: String, required: true }, hash: { type: String, required: true } },
+  { timestamps: true }
+);
+export const AdminCredential = model('AdminCredential', AdminCredentialSchema);
+
 // ---------- websites (multi-site switcher) ----------
 const WebsiteSchema = new Schema(
   {

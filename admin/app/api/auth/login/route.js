@@ -5,7 +5,7 @@ export const runtime = 'nodejs';
 
 export async function POST(req) {
   const { email, password } = await req.json().catch(() => ({}));
-  if (!checkCredentials(email || '', password || '')) {
+  if (!(await checkCredentials(email || '', password || ''))) {
     return NextResponse.json({ success: false, error: 'Invalid email or password' }, { status: 401 });
   }
   const res = NextResponse.json({ success: true });

@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import Logo from './Logo';
 import { useToast } from './Toast';
 import {
-  IconBell, IconCart, IconChat, IconChevron, IconCollapse, IconDb, IconGlobe, IconGrid, IconImage, IconLayers, IconLogout, IconMenu,
+  IconBell, IconCart, IconChat, IconChevron, IconCollapse, IconDb, IconGlobe, IconGrid, IconImage, IconLayers, IconLock, IconLogout, IconMenu,
 } from './Icons';
 
 const MENU = [
@@ -29,6 +29,7 @@ const MENU = [
   { label: 'Forms', icon: IconLayers, children: [['All Forms', '/forms'], ['Add Form', '/forms/new']] },
   { label: 'Tags', href: '/tags', icon: IconImage },
   { label: 'Websites', icon: IconGlobe, children: [['All Websites', '/websites'], ['Add Website', '/websites/new']] },
+  { label: 'Change Password', href: '/change-password', icon: IconLock },
 ];
 
 function playChime() {

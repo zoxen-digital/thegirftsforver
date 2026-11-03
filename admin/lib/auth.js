@@ -1,6 +1,8 @@
 import crypto from 'node:crypto';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { dbConnect } from './db';
+import { AdminCredential } from './models';
 
 export const SESSION_COOKIE = 'tgf_admin';
 const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
@@ -39,11 +41,29 @@ export function verifySessionToken(token) {
   }
 }
 
-export function checkCredentials(email, password) {
-  const e = process.env.ADMIN_EMAIL;
+function hashPassword(password, salt) {
+  return crypto.scryptSync(String(password), salt, 64).toString('hex');
+}
+
+/** The password saved from the panel wins; ADMIN_PASSWORD is used until one is saved. */
+export async function checkPassword(password) {
+  await dbConnect();
+  const saved = await AdminCredential.findById('admin').lean();
+  if (saved) return safeEqual(hashPassword(password, saved.salt), saved.hash);
   const p = process.env.ADMIN_PASSWORD;
-  if (!e || !p) return false;
-  return safeEqual(String(email).trim().toLowerCase(), e.toLowerCase()) && safeEqual(password, p);
+  return !!p && safeEqual(password, p);
+}
+
+export async function savePassword(password) {
+  await dbConnect();
+  const salt = crypto.randomBytes(16).toString('hex');
+  await AdminCredential.findByIdAndUpdate('admin', { salt, hash: hashPassword(password, salt) }, { upsert: true });
+}
+
+export async function checkCredentials(email, password) {
+  const e = process.env.ADMIN_EMAIL;
+  if (!e || !safeEqual(String(email).trim().toLowerCase(), e.toLowerCase())) return false;
+  return checkPassword(password);
 }
 
 export const sessionCookieOptions = {
