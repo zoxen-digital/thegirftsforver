@@ -1,0 +1,67 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --color-brand: #7a1f3d;
+  --color-brand-dark: #5c142c;
+  --color-accent: #c9a24a;
+  --color-panel: #f1f5f9;
+  --color-thead: #4f8df5;
+}
+
+:root {
+  color-scheme: light;
+}
+body {
+  background: var(--color-panel);
+  color: #111827;
+}
+
+.input {
+  @apply w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-[15px] text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-100;
+}
+.label {
+  @apply mb-2 block text-[15px] font-semibold text-slate-900;
+}
+.hint {
+  @apply mt-2 text-xs text-slate-500;
+}
+.card {
+  @apply rounded-2xl bg-white shadow-[0_1px_2px_rgba(15,23,42,.04)];
+}
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition disabled:opacity-60;
+}
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition disabled:opacity-60 bg-blue-600 text-white hover:bg-blue-700;
+}
+.btn-outline {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition disabled:opacity-60 border border-blue-500 bg-white text-blue-600 hover:bg-blue-50;
+}
+.pill {
+  @apply inline-block rounded px-2 py-1 text-[11px] font-semibold text-white;
+}
+table.data thead th {
+  @apply bg-thead px-5 py-4 text-left text-[15px] font-medium uppercase tracking-wide text-white first:rounded-tl-xl last:rounded-tr-xl;
+}
+table.data tbody td {
+  @apply border-b border-slate-100 px-5 py-5 align-top text-[15px] text-slate-700;
+}
+
+/* rich text editor */
+.rte-body {
+  min-height: 260px;
+  outline: none;
+}
+.rte-body:empty:before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+}
+.rte-body ul { list-style: disc; padding-left: 1.5rem; }
+.rte-body ol { list-style: decimal; padding-left: 1.5rem; }
+.rte-body h2 { font-size: 1.4rem; font-weight: 700; margin: .5rem 0; }
+.rte-body h3 { font-size: 1.15rem; font-weight: 700; margin: .5rem 0; }
+.rte-body a { color: #2563eb; text-decoration: underline; }
+.rte-body img { max-width: 100%; border-radius: 8px; }
+.rte-body table { border-collapse: collapse; width: 100%; }
+.rte-body td, .rte-body th { border: 1px solid #e2e8f0; padding: 6px; }

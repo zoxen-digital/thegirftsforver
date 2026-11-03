@@ -1,0 +1,74 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-playfair), Georgia, serif;
+  --color-wine: #7a1f3d;
+  --color-wine-dark: #5a1530;
+  --color-rose: #e7a1b4;
+  --color-blush: #fbeef1;
+  --color-gold: #c9a24a;
+  --color-gold-soft: #f3e6c4;
+  --color-cream: #fffaf4;
+  --color-ink: #231a1e;
+  --color-muted: #6f6266;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+
+.container-x {
+  @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+
+.btn-wine {
+  @apply inline-flex items-center justify-center gap-2 rounded-full bg-wine px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-wine/20 transition hover:bg-wine-dark disabled:opacity-60;
+}
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-full border border-wine/30 px-6 py-3 text-sm font-semibold text-wine transition hover:bg-blush;
+}
+.field {
+  @apply w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-[15px] outline-none transition placeholder:text-muted/60 focus:border-wine/50 focus:ring-4 focus:ring-wine/10;
+}
+.eyebrow {
+  @apply text-xs font-semibold uppercase tracking-[0.25em] text-gold;
+}
+.section-title {
+  @apply font-display text-3xl font-semibold text-ink sm:text-4xl;
+}
+
+/* rich text from admin editor */
+.prose-gift {
+  @apply text-[16px] leading-relaxed text-ink/85;
+}
+.prose-gift h2 { @apply mb-3 mt-8 font-display text-2xl font-semibold text-ink; }
+.prose-gift h3 { @apply mb-2 mt-6 text-xl font-semibold text-ink; }
+.prose-gift p { @apply mb-4; }
+.prose-gift ul { @apply mb-4 list-disc pl-6; }
+.prose-gift ol { @apply mb-4 list-decimal pl-6; }
+.prose-gift a { @apply text-wine underline; }
+.prose-gift img { @apply my-4 rounded-2xl; }
+.prose-gift blockquote { @apply my-4 border-l-4 border-gold pl-4 italic; }
+.prose-gift table { @apply my-4 w-full border-collapse; }
+.prose-gift td, .prose-gift th { @apply border border-ink/10 p-2; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+@keyframes kenburns {
+  from { transform: scale(1.08); }
+  to { transform: scale(1); }
+}
+.animate-kenburns { animation: kenburns 7s ease-out both; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+.animate-rise { animation: rise .8s cubic-bezier(.2,.7,.2,1) both; }
