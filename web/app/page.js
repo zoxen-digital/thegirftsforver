@@ -3,7 +3,7 @@ import Link from 'next/link';
 import HeroSlider from '@/components/HeroSlider';
 import ProductCard from '@/components/ProductCard';
 import Reviews from '@/components/Reviews';
-import { IconArrowRight, IconClock, IconGift, IconHeart, IconShield, IconTruck } from '@/components/Icons';
+import { IconArrowRight, IconHeart } from '@/components/Icons';
 import { getAllCategories, getBlogs, getHomeRows, getReviews, getSlides } from '@/lib/data';
 import { img } from '@/lib/utils';
 
@@ -16,13 +16,6 @@ const FALLBACK_SLIDES = [
     content: 'Handcrafted hampers, fresh blooms and keepsakes delivered to your loved ones across Pakistan.',
     link: '/categories',
   },
-];
-
-const PERKS = [
-  [IconTruck, 'Same-day delivery', 'Order before 4 PM for Karachi'],
-  [IconGift, 'Luxury gift wrap', 'Every order hand-wrapped'],
-  [IconShield, 'Freshness promise', 'Or we replace it free'],
-  [IconClock, '24/7 WhatsApp help', 'Real humans, real fast'],
 ];
 
 export default async function Home() {
@@ -39,34 +32,12 @@ export default async function Home() {
     <>
       <HeroSlider slides={slides.length ? slides : FALLBACK_SLIDES} />
 
-      {/* perks */}
-      <section className="container-x mt-6">
-        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-ink/5 bg-ink/5 lg:grid-cols-4">
-          {PERKS.map(([Icon, t, d]) => (
-            <div key={t} className="flex items-center gap-3 bg-white px-4 py-5 sm:gap-4 sm:px-6">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush text-wine">
-                <Icon width={20} height={20} />
-              </span>
-              <span>
-                <span className="block text-sm font-semibold">{t}</span>
-                <span className="block text-xs text-muted">{d}</span>
-              </span>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* categories */}
       {topCats.length > 0 && (
-        <section className="container-x mt-20">
-          <div className="mb-8 flex items-end justify-between gap-4">
-            <div>
-              <p className="eyebrow">Shop by occasion</p>
-              <h2 className="section-title mt-2">Find the perfect gift</h2>
-            </div>
-            <Link href="/categories" className="hidden items-center gap-1.5 text-sm font-semibold text-wine sm:flex">
-              View all categories <IconArrowRight width={16} height={16} />
-            </Link>
+        <section className="container-x mt-14">
+          <div className="mb-8">
+            <p className="eyebrow">Shop by occasion</p>
+            <h2 className="section-title mt-2">Find the perfect gift</h2>
           </div>
           <div className="no-scrollbar -mx-4 flex snap-x gap-4 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:px-0 lg:grid-cols-8">
             {topCats.map((c) => (
@@ -77,6 +48,9 @@ export default async function Home() {
                 <span className="mt-3 block text-[13.5px] font-medium leading-tight group-hover:text-wine">{c.name}</span>
               </Link>
             ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Link href="/categories" className="btn-wine">View all categories <IconArrowRight width={16} height={16} /></Link>
           </div>
         </section>
       )}

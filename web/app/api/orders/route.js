@@ -18,6 +18,9 @@ export async function POST(req) {
     return NextResponse.json({ error: 'Please fill all required fields' }, { status: 400 });
   }
 
+  const paymentProof = str(body.paymentProof, 200);
+  if (!paymentProof.startsWith('/api/uploads/misc/')) return NextResponse.json({ error: 'Please upload your payment screenshot' }, { status: 400 });
+
   await dbConnect();
   const ids = body.items.slice(0, 50).map((i) => i.productId);
   const products = await Product.find({ _id: { $in: ids }, active: true }).lean();
@@ -27,11 +30,12 @@ export async function POST(req) {
   for (const it of body.items.slice(0, 50)) {
     const p = byId[it.productId];
     if (!p) continue;
-    let price = salePrice(p.price, p.discount);
+    let price = salePrice(p.price);
     for (const [group, val] of Object.entries(it.variations || {})) {
       const opt = p.variations?.[group]?.find((o) => o.value === val);
       if (opt?.price) price += Number(opt.price);
     }
+    for (const m of p.modifiers || []) if (it.modifiers?.includes?.(m.value)) price += Number(m.price || 0);
     const options = {};
     for (const [k, v] of Object.entries(it.options || {}).slice(0, 20)) options[str(k, 60)] = str(v, 500);
     items.push({ product: p._id, name: p.name, image: p.coverImage, price, cost: p.costPrice || 0, qty: Math.min(99, Math.max(1, Number(it.qty) || 1)), options });
@@ -53,7 +57,8 @@ export async function POST(req) {
     deliveryFee: fee,
     total: subtotal + fee,
     cost: items.reduce((s, i) => s + i.cost * i.qty, 0),
-    paymentMethod: ['cod', 'bank'].includes(body.paymentMethod) ? body.paymentMethod : 'cod',
+    paymentMethod: 'bank',
+    paymentProof,
     status: 'new',
     website: req.headers.get('host') || '',
   });

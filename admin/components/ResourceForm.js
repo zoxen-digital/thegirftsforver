@@ -115,6 +115,28 @@ function Variations({ value = {}, onChange }) {
   );
 }
 
+function Repeater({ f, value, onChange }) {
+  const rows = value || [];
+  const set = (i, k, v) => onChange(rows.map((r, j) => (j === i ? { ...r, [k]: v } : r)));
+  return (
+    <div>
+      {rows.map((row, i) => (
+        <div key={i} className="mb-2 flex items-start gap-3">
+          {f.columns.map((c) =>
+            c.textarea ? (
+              <textarea key={c.k} className="input min-h-20 flex-1" placeholder={c.placeholder} value={row[c.k] || ''} onChange={(e) => set(i, c.k, e.target.value)} />
+            ) : (
+              <input key={c.k} className={`input ${c.number ? 'w-28' : 'flex-1'}`} type={c.number ? 'number' : 'text'} placeholder={c.placeholder} value={row[c.k] ?? ''} onChange={(e) => set(i, c.k, c.number ? Number(e.target.value) : e.target.value)} />
+            )
+          )}
+          <button type="button" className="mt-2 h-7 w-7 shrink-0 rounded bg-red-600 text-sm text-white" onClick={() => onChange(rows.filter((_, j) => j !== i))}>×</button>
+        </div>
+      ))}
+      <button type="button" className="rounded bg-emerald-700 px-2 py-1 text-xs font-medium text-white" onClick={() => onChange([...rows, {}])}>+ {f.addLabel}</button>
+    </div>
+  );
+}
+
 function Rating({ value, onChange }) {
   return (
     <div className="flex gap-1">
@@ -147,6 +169,8 @@ export function FieldInput({ f, value, onChange }) {
       return <MultiSelect f={f} value={value} onChange={onChange} />;
     case 'variations':
       return <Variations value={value} onChange={onChange} />;
+    case 'repeater':
+      return <Repeater f={f} value={value} onChange={onChange} />;
     case 'rating':
       return <Rating value={value} onChange={onChange} />;
     case 'checkbox':
@@ -171,7 +195,7 @@ function normalize(data) {
   for (const [k, v] of Object.entries(data)) {
     if (Array.isArray(v)) out[k] = v.map((x) => (x && typeof x === 'object' && x._id && !('value' in x) ? x._id : x));
     else if (v && typeof v === 'object' && v._id) out[k] = v._id;
-    else if (v === '') out[k] = k === 'parent' || k === 'form' || k === 'category' ? null : v;
+    else if (v === '') out[k] = k === 'parent' || k === 'form' || k === 'category' || k === 'suggestionCategory' ? null : v;
     else out[k] = v;
   }
   return out;

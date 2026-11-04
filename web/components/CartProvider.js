@@ -24,13 +24,14 @@ export function CartProvider({ children }) {
     } catch {}
   }, [items, ready]);
 
-  const add = useCallback((item) => {
+  const add = useCallback((item, { silent = false } = {}) => {
     setItems((list) => {
       const key = item.productId + JSON.stringify(item.options || {});
       const found = list.find((x) => x.key === key);
       if (found) return list.map((x) => (x.key === key ? { ...x, qty: x.qty + item.qty } : x));
       return [...list, { ...item, key }];
     });
+    if (silent) return;
     setToast(item.name);
     setTimeout(() => setToast(null), 2600);
   }, []);

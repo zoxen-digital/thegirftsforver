@@ -88,6 +88,15 @@ function OrderView({ o }) {
           <img src={previewSrc(o.image)} alt="" className="h-40 rounded object-cover" />
         </div>
       )}
+      {o.paymentProof && (
+        <div className="mt-4">
+          <div className="mb-1 font-semibold">Payment screenshot</div>
+          <a href={previewSrc(o.paymentProof)} target="_blank">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={previewSrc(o.paymentProof)} alt="" className="h-40 rounded object-cover" />
+          </a>
+        </div>
+      )}
       {o.notes && <p className="mt-3 text-slate-600"><b>Notes:</b> {o.notes}</p>}
     </div>
   );
@@ -159,7 +168,7 @@ export default function OrdersPage() {
         <div className="overflow-x-auto">
           <table className="data w-full min-w-[1100px]">
             <thead>
-              <tr>{['ID', 'D/T', 'Status', 'Image', 'Name', 'Number', 'Receiver Name', 'Receiver Number', 'Total', 'Action'].map((h) => <th key={h}>{h}</th>)}</tr>
+              <tr>{['ID', 'D/T', 'Status', 'Image', 'Name', 'Number', 'Receiver Name', 'Receiver Number', 'Action'].map((h) => <th key={h}>{h}</th>)}</tr>
             </thead>
             <tbody>
               {data.items?.map((o) => (
@@ -177,7 +186,6 @@ export default function OrdersPage() {
                   <td>{o.customer?.phone}</td>
                   <td>{o.receiver?.name}</td>
                   <td>{o.receiver?.phone}</td>
-                  <td className="whitespace-nowrap">{money(o.total)}</td>
                   <td>
                     <div className="flex gap-1">
                       <button onClick={() => setView(o)} className="rounded bg-sky-500 px-2 py-1 text-xs text-white">View</button>
@@ -188,7 +196,7 @@ export default function OrdersPage() {
                   </td>
                 </tr>
               ))}
-              {!data.items?.length && <tr><td colSpan={10}>No orders found</td></tr>}
+              {!data.items?.length && <tr><td colSpan={9}>No orders found</td></tr>}
             </tbody>
           </table>
         </div>

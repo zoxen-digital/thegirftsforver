@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import PageHeader from '@/components/PageHeader';
 import ProductCard from '@/components/ProductCard';
 import Reviews from '@/components/Reviews';
+import Faqs from '@/components/Faqs';
 import { getCategory, getCategoryProducts, getReviews } from '@/lib/data';
 import { img } from '@/lib/utils';
 
@@ -84,6 +85,8 @@ export default async function CategoryPage({ params, searchParams }) {
           <article className="prose-gift mx-auto mt-20 max-w-3xl rounded-3xl bg-white p-8 sm:p-12" dangerouslySetInnerHTML={{ __html: c.description }} />
         )}
       </div>
+
+      <Faqs items={c.faqs} />
 
       <Reviews reviews={reviews} title={`What customers say about ${c.name}`} />
     </>

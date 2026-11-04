@@ -4,8 +4,7 @@ import Gallery from '@/components/Gallery';
 import BuyBox from '@/components/BuyBox';
 import ProductCard from '@/components/ProductCard';
 import Reviews from '@/components/Reviews';
-import { IconGift, IconShield, IconTruck } from '@/components/Icons';
-import { getProduct, getRelated, getReviews } from '@/lib/data';
+import { getProduct, getRelated, getReviews, getSite, getSuggestions } from '@/lib/data';
 import { img, salePrice } from '@/lib/utils';
 
 export async function generateMetadata({ params }) {
@@ -29,13 +28,15 @@ export default async function ProductPage({ params }) {
   const { slug } = await params;
   const p = await getProduct(slug);
   if (!p) notFound();
-  const [related, reviews] = await Promise.all([
+  const [related, suggestions, site, reviews] = await Promise.all([
     getRelated(p),
+    getSuggestions(p),
+    getSite(),
     getReviews({ kind: 'category', category: p.category?._id, limit: 6 }),
   ]);
   const images = [p.coverImage, ...(p.gallery || [])].filter(Boolean).map(img);
   const yt = youtubeId(p.youtubeUrl);
-  const sale = salePrice(p.price, p.discount);
+  const sale = salePrice(p.price);
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -56,7 +57,7 @@ export default async function ProductPage({ params }) {
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
-        <Gallery images={images.length ? images : ['/placeholder.svg']} alt={p.name} discount={p.discount} />
+        <Gallery images={images.length ? images : ['/placeholder.svg']} alt={p.name} />
         <div>
           {p.category && <Link href={`/category/${p.category.slug}`} className="eyebrow">{p.category.name}</Link>}
           <h1 className="mt-3 font-display text-3xl font-semibold leading-tight sm:text-4xl">{p.name}</h1>
@@ -68,18 +69,15 @@ export default async function ProductPage({ params }) {
               slug: p.slug,
               image: images[0],
               price: p.price,
-              discount: p.discount,
               variations: p.variations || {},
+              modifiers: p.modifiers || [],
               imagesNeed: p.imagesNeed || 0,
               form: p.form ? { name: p.form.name, fields: p.form.fields || [] } : null,
               freeDelivery: p.freeDelivery,
             }}
+            whatsapp={site.whatsapp}
+            suggestions={suggestions}
           />
-          <ul className="mt-8 grid gap-3 rounded-2xl border border-ink/5 bg-white p-5 text-sm sm:grid-cols-3">
-            <li className="flex items-center gap-2"><IconTruck width={18} height={18} className="text-wine" /> {p.freeDelivery ? 'Free delivery' : 'Same-day delivery'}</li>
-            <li className="flex items-center gap-2"><IconGift width={18} height={18} className="text-wine" /> Free gift card</li>
-            <li className="flex items-center gap-2"><IconShield width={18} height={18} className="text-wine" /> Freshness promise</li>
-          </ul>
         </div>
       </div>
 

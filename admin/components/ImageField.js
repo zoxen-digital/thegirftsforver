@@ -13,9 +13,26 @@ export function previewSrc(url) {
   return url;
 }
 
+/** Shrinks images in the browser: Vercel rejects request bodies over 4.5MB. GIFs stay as they are. */
+async function compress(file) {
+  if (file.type === 'image/gif') return file;
+  try {
+    const bmp = await createImageBitmap(file);
+    const scale = Math.min(1, 2000 / Math.max(bmp.width, bmp.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bmp.width * scale);
+    canvas.height = Math.round(bmp.height * scale);
+    canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise((r) => canvas.toBlob(r, 'image/webp', 0.85));
+    return blob ? new File([blob], 'image.webp', { type: 'image/webp' }) : file;
+  } catch {
+    return file;
+  }
+}
+
 export async function uploadImage(file, folder) {
   const fd = new FormData();
-  fd.append('file', file);
+  fd.append('file', await compress(file));
   fd.append('folder', folder);
   const res = await fetch('/api/upload', { method: 'POST', body: fd });
   const data = await res.json().catch(() => ({}));

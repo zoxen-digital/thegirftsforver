@@ -7,6 +7,8 @@ const seo = [
   { key: 'metaKeywords', label: 'Meta Keywords', type: 'text' },
 ];
 
+const faqs = { key: 'faqs', label: 'FAQs', type: 'repeater', addLabel: 'Add FAQ', columns: [{ k: 'q', placeholder: 'Question' }, { k: 'a', placeholder: 'Answer', textarea: true }] };
+
 const reviewFields = (withCategory) => [
   ...(withCategory ? [{ key: 'category', label: 'Review Category', type: 'select', source: 'categories', required: true, placeholder: '-- Select Category --' }] : []),
   { key: 'name', label: 'Name', type: 'text', required: true, placeholder: 'name' },
@@ -67,7 +69,6 @@ export const UI = {
       { key: 'coverImage', label: 'Cover Image', type: 'image', folder: 'products', side: true },
       { key: 'gallery', label: 'Gallery Images', type: 'gallery', folder: 'gallery', side: true },
       { key: 'price', label: 'Price', type: 'number', required: true, placeholder: 'Enter price', side: true, half: true },
-      { key: 'discount', label: 'Discount %', type: 'number', required: true, placeholder: 'Enter Discount %', side: true, half: true, default: 0 },
       { key: 'costPrice', label: 'Cost Price', type: 'number', placeholder: 'Used for profit report', side: true, half: true, default: 0 },
       { key: 'imagesNeed', label: 'Images Need', type: 'number', placeholder: 'Photos customer must upload', side: true, half: true, default: 0 },
       { key: 'youtubeUrl', label: 'Youtube Url', type: 'text', placeholder: 'Enter Youtube Url', side: true },
@@ -75,6 +76,8 @@ export const UI = {
       { key: 'metaDescription', label: 'Meta Description', type: 'text', placeholder: 'Enter Meta Description', side: true },
       { key: 'tags', label: 'Select Tags:', type: 'multiselect', source: 'tags', side: true },
       { key: 'form', label: 'Select Form:', type: 'select', source: 'forms', placeholder: '-- Select a Form --', side: true },
+      { key: 'suggestionCategory', label: 'Suggestions Category', type: 'select', source: 'categories', placeholder: '-- Same as product category --', hint: 'Products from this category are suggested in the add-to-cart popup.', side: true },
+      { key: 'modifiers', label: 'Modifiers (paid add-ons)', type: 'repeater', addLabel: 'Add Modifier', columns: [{ k: 'value', placeholder: 'Name e.g. Greeting card' }, { k: 'price', placeholder: 'Price', number: true }], side: true },
       {
         type: 'flags',
         side: true,
@@ -124,6 +127,7 @@ export const UI = {
       { key: 'imageName', label: 'Image Name', type: 'text', optional: true, placeholder: 'Image Name (alt text)' },
       ...seo,
       { key: 'description', label: 'Description', type: 'richtext', required: true, folder: 'pages' },
+      faqs,
       {
         type: 'flags',
         items: [['active', 'Active Category:', true], ['featured', 'Feature Category (home rows):'], ['showOnMenu', 'Show on Menu:'], ['hidden', 'Hidden:']],
@@ -155,6 +159,7 @@ export const UI = {
       { key: 'author', label: 'Author', type: 'text', default: 'Team TheGiftsForever' },
       ...seo,
       { key: 'content', label: 'Content', type: 'richtext', required: true, folder: 'pages', placeholder: 'Write the blog post' },
+      faqs,
       { type: 'flags', items: [['active', 'Active:', true], ['featured', 'Featured:']] },
     ],
   },
@@ -341,6 +346,12 @@ export const UI = {
       { key: 'whatsapp', label: 'WhatsApp Number', type: 'text', placeholder: '923001234567' },
       { key: 'email', label: 'Email', type: 'text' },
       { key: 'address', label: 'Address', type: 'textarea' },
+      { key: 'bankDetails', label: 'Bank Details (shown at checkout)', type: 'textarea', placeholder: 'Bank, account title, account number / IBAN' },
+      { key: 'facebook', label: 'Facebook URL', type: 'text' },
+      { key: 'instagram', label: 'Instagram URL', type: 'text' },
+      { key: 'tiktok', label: 'TikTok URL', type: 'text' },
+      { key: 'youtube', label: 'YouTube URL', type: 'text' },
+      { key: 'twitter', label: 'X / Twitter URL', type: 'text' },
       { type: 'flags', items: [['active', 'Active:', true]] },
     ],
   },

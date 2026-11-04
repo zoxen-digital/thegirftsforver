@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Logo from './Logo';
-import { IconFacebook, IconInstagram, IconMail, IconPhone, IconPin, IconTiktok, IconWhatsApp } from './Icons';
+import { IconMail, IconPhone, IconPin, IconWhatsApp, SOCIALS } from './Icons';
 
 export default function Footer({ site, categories, pages }) {
   return (
@@ -13,8 +13,8 @@ export default function Footer({ site, categories, pages }) {
             loved ones across Pakistan, from anywhere in the world.
           </p>
           <div className="mt-6 flex gap-3">
-            {[IconInstagram, IconFacebook, IconTiktok].map((I, i) => (
-              <a key={i} href="#" aria-label="Social link" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition hover:border-gold hover:text-gold">
+            {SOCIALS.map(([k, I]) => (
+              <a key={k} href={site.social[k] || '#'} target="_blank" rel="noreferrer" aria-label={k} className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition hover:border-gold hover:text-gold">
                 <I width={18} height={18} />
               </a>
             ))}
@@ -35,7 +35,6 @@ export default function Footer({ site, categories, pages }) {
             <li><Link href="/about" className="hover:text-gold">About us</Link></li>
             <li><Link href="/contact" className="hover:text-gold">Contact</Link></li>
             <li><Link href="/faq" className="hover:text-gold">FAQs</Link></li>
-            <li><Link href="/track-order" className="hover:text-gold">Track your order</Link></li>
             <li><Link href="/blogs" className="hover:text-gold">Gifting blog</Link></li>
             {pages.map((p) => (
               <li key={p.slug}><Link href={`/pages/${p.slug}`} className="hover:text-gold">{p.title}</Link></li>
@@ -59,7 +58,7 @@ export default function Footer({ site, categories, pages }) {
             Designed &amp; Developed by{' '}
             <a href="https://zoxendigital.com" target="_blank" rel="noopener" className="font-semibold text-gold hover:underline">Zoxen Digital</a>
           </span>
-          <span>Cash on delivery · Bank transfer · Secure checkout</span>
+          <span>Bank transfer · Secure checkout</span>
         </div>
       </div>
     </footer>

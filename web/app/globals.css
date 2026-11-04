@@ -2,9 +2,9 @@
 
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-playfair), Georgia, serif;
-  --color-wine: #7a1f3d;
-  --color-wine-dark: #5a1530;
+  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --color-wine: #740000;
+  --color-wine-dark: #520000;
   --color-rose: #e7a1b4;
   --color-blush: #fbeef1;
   --color-gold: #c9a24a;
@@ -37,7 +37,7 @@ body {
   @apply w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-[15px] outline-none transition placeholder:text-muted/60 focus:border-wine/50 focus:ring-4 focus:ring-wine/10;
 }
 .eyebrow {
-  @apply text-xs font-semibold uppercase tracking-[0.25em] text-gold;
+  @apply text-xs font-semibold uppercase tracking-[0.25em] text-wine;
 }
 .section-title {
   @apply font-display text-3xl font-semibold text-ink sm:text-4xl;

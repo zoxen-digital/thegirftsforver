@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { img, pkr, salePrice } from '@/lib/utils';
+import { img, salePrice } from '@/lib/utils';
+import { Price } from './Currency';
 import { IconTruck } from './Icons';
 
 export default function ProductCard({ p, priority = false }) {
-  const sale = salePrice(p.price, p.discount);
+  const sale = salePrice(p.price);
   return (
     <Link href={`/product/${p.slug}`} className="group flex flex-col">
       <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-blush">
@@ -13,12 +14,10 @@ export default function ProductCard({ p, priority = false }) {
           alt={p.name}
           fill
           priority={priority}
+          unoptimized={p.coverImage?.startsWith('/api/uploads/')}
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           className="object-cover transition duration-700 group-hover:scale-105"
         />
-        {p.discount > 0 && (
-          <span className="absolute left-3 top-3 rounded-full bg-wine px-2.5 py-1 text-[11px] font-bold text-white">−{p.discount}%</span>
-        )}
         {p.freeDelivery && (
           <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-[10.5px] font-semibold text-ink backdrop-blur">
             <IconTruck width={13} height={13} /> Free
@@ -30,8 +29,7 @@ export default function ProductCard({ p, priority = false }) {
       </div>
       <h3 className="mt-3 line-clamp-2 text-[14.5px] font-medium leading-snug text-ink transition group-hover:text-wine">{p.name}</h3>
       <div className="mt-1.5 flex items-baseline gap-2">
-        <span className="text-[15px] font-bold text-wine">{pkr(sale)}</span>
-        {p.discount > 0 && <span className="text-xs text-muted line-through">{pkr(p.price)}</span>}
+        <span className="text-[15px] font-bold text-wine"><Price value={sale} /></span>
       </div>
     </Link>
   );

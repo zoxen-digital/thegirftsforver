@@ -26,7 +26,7 @@ export default function ContactForm({ whatsapp }) {
         <input className="field" placeholder="Budget (PKR)" value={f.budget} onChange={set('budget')} />
       </div>
       <textarea className="field" rows={5} placeholder="What would you like to send?" required value={f.message} onChange={set('message')} />
-      <button className="btn-wine w-full bg-[#25D366] py-4 shadow-none hover:bg-[#1ea952]">
+      <button className="btn-wine w-full bg-[#25D366]! py-4 shadow-none hover:bg-[#1ea952]!">
         <IconWhatsApp width={18} height={18} /> Send on WhatsApp
       </button>
     </form>

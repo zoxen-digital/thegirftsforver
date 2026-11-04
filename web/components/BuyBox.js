@@ -1,33 +1,52 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 import { useCart } from './CartProvider';
-import { IconBag, IconMinus, IconPlus, IconUpload, IconWhatsApp } from './Icons';
-import { pkr, salePrice } from '@/lib/utils';
+import { Price } from './Currency';
+import { IconBag, IconMinus, IconPlus, IconShare, IconUpload, IconWhatsApp, IconX } from './Icons';
+import { img, salePrice } from '@/lib/utils';
 
 export const VAR_LABELS = { size: 'Size', color: 'Color', quantity: 'Quantity', suitColor: 'Suit Color' };
 
+/** Shrinks photos in the browser: Vercel rejects request bodies over 4.5MB. */
+async function compress(file) {
+  try {
+    const bmp = await createImageBitmap(file);
+    const scale = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bmp.width * scale);
+    canvas.height = Math.round(bmp.height * scale);
+    canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise((r) => canvas.toBlob(r, 'image/webp', 0.85));
+    return blob ? new File([blob], 'photo.webp', { type: 'image/webp' }) : file;
+  } catch {
+    return file;
+  }
+}
+
 export async function uploadCustomerPhoto(file) {
   const fd = new FormData();
-  fd.append('file', file);
+  fd.append('file', await compress(file));
   const res = await fetch('/api/customer-upload', { method: 'POST', body: fd });
   const d = await res.json().catch(() => ({}));
   if (!res.ok || !d.success) throw new Error(d.error || 'Upload failed');
   return d.url;
 }
 
-/** Price for a product with the chosen variation values (variation prices are add-ons). */
-export function unitPrice(product, chosen) {
-  let price = salePrice(product.price, product.discount);
+/** Price for a product with the chosen variation values and modifiers (both are add-ons). */
+export function unitPrice(product, chosen, modifiers = []) {
+  let price = salePrice(product.price);
   for (const [group, val] of Object.entries(chosen || {})) {
     const opt = product.variations?.[group]?.find((o) => o.value === val);
     if (opt?.price) price += Number(opt.price);
   }
+  for (const m of product.modifiers || []) if (modifiers.includes(m.value)) price += Number(m.price || 0);
   return price;
 }
 
-function PhotoInput({ value, onChange, label }) {
+export function PhotoInput({ value, onChange, label }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   return (
@@ -40,7 +59,7 @@ function PhotoInput({ value, onChange, label }) {
       )}
       <span className="flex-1">
         <span className="block font-medium">{label}</span>
-        <span className={`text-xs ${err ? 'text-red-600' : 'text-muted'}`}>{busy ? 'Uploading…' : err || (value ? 'Tap to replace' : 'JPG, PNG or WEBP · max 5MB')}</span>
+        <span className={`text-xs ${err ? 'text-red-600' : 'text-muted'}`}>{busy ? 'Uploading…' : err || (value ? 'Tap to replace' : 'JPG, PNG or WEBP')}</span>
       </span>
       <input
         type="file"
@@ -63,17 +82,77 @@ function PhotoInput({ value, onChange, label }) {
   );
 }
 
-export default function BuyBox({ product }) {
+function AddedPopup({ cartKey, suggestions, onClose }) {
+  const { items, add, setQty } = useCart();
+  const it = items.find((x) => x.key === cartKey);
+  if (!it) return null;
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/50 p-4" onClick={onClose}>
+      <div className="max-h-[90vh] w-full max-w-lg animate-rise overflow-y-auto rounded-3xl bg-white p-6" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-xl font-semibold">Added to cart</h2>
+          <button onClick={onClose} aria-label="Close"><IconX /></button>
+        </div>
+        <div className="mt-4 flex gap-4">
+          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-blush">
+            <Image src={it.image || '/placeholder.svg'} alt="" fill sizes="80px" className="object-cover" unoptimized={it.image?.startsWith('/api/uploads/')} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="line-clamp-2 text-sm font-medium">{it.name}</p>
+            <div className="mt-2 flex items-center justify-between">
+              <div className="flex items-center rounded-full border border-ink/10">
+                <button onClick={() => setQty(it.key, it.qty - 1)} className="p-2" aria-label="Decrease"><IconMinus width={14} height={14} /></button>
+                <span className="w-7 text-center text-sm">{it.qty}</span>
+                <button onClick={() => setQty(it.key, it.qty + 1)} className="p-2" aria-label="Increase"><IconPlus width={14} height={14} /></button>
+              </div>
+              <span className="font-semibold text-wine"><Price value={it.price * it.qty} /></span>
+            </div>
+          </div>
+        </div>
+        {suggestions.length > 0 && (
+          <div className="mt-6">
+            <h3 className="mb-3 text-sm font-semibold">Add something extra</h3>
+            <ul className="space-y-2">
+              {suggestions.slice(0, 4).map((s) => (
+                <li key={s._id} className="flex items-center gap-3 rounded-xl border border-ink/5 p-2">
+                  <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-blush">
+                    <Image src={img(s.coverImage)} alt="" fill sizes="48px" className="object-cover" unoptimized={s.coverImage?.startsWith('/api/uploads/')} />
+                  </div>
+                  <span className="line-clamp-1 flex-1 text-sm">{s.name}</span>
+                  <span className="text-sm font-semibold text-wine"><Price value={salePrice(s.price)} /></span>
+                  <button
+                    onClick={() => add({ productId: s._id, slug: s.slug, name: s.name, image: img(s.coverImage), price: salePrice(s.price), qty: 1, variations: {}, options: {} }, { silent: true })}
+                    className="rounded-full bg-wine p-1.5 text-white"
+                    aria-label={`Add ${s.name}`}
+                  >
+                    <IconPlus width={14} height={14} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <Link href="/cart" className="btn-ghost">View cart</Link>
+          <Link href="/checkout" className="btn-wine">Checkout</Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function BuyBox({ product, whatsapp, suggestions = [] }) {
   const { add } = useCart();
-  const router = useRouter();
   const groups = Object.entries(product.variations || {}).filter(([, opts]) => opts?.length);
   const [chosen, setChosen] = useState(() => Object.fromEntries(groups.map(([g, opts]) => [g, opts[0].value])));
+  const [mods, setMods] = useState([]);
   const [fields, setFields] = useState({});
   const [photos, setPhotos] = useState(() => Array(product.imagesNeed || 0).fill(''));
-  const [qty, setQty] = useState(1);
   const [error, setError] = useState('');
+  const [added, setAdded] = useState(null);
+  const [copied, setCopied] = useState(false);
 
-  const price = unitPrice(product, chosen);
+  const price = unitPrice(product, chosen, mods);
 
   function buildItem() {
     const formFields = product.form?.fields || [];
@@ -87,6 +166,7 @@ export default function BuyBox({ product }) {
       const opt = product.variations[g].find((o) => o.value === v);
       options[VAR_LABELS[g] || g] = opt?.label || v;
     }
+    if (mods.length) options['Add-ons'] = mods.join(', ');
     for (const f of formFields) if (fields[f.name]) options[f.label] = fields[f.name];
     photos.forEach((p, i) => (options[`Photo ${i + 1}`] = p));
     return {
@@ -95,25 +175,33 @@ export default function BuyBox({ product }) {
       name: product.name,
       image: product.image,
       price,
-      qty,
+      qty: 1,
       variations: chosen,
+      modifiers: mods,
       options,
     };
   }
 
-  function addToCart(go) {
+  function addToCart() {
     const item = buildItem();
     if (!item) return;
-    add(item);
-    if (go) router.push('/checkout');
+    add(item, { silent: true });
+    setAdded(item.productId + JSON.stringify(item.options));
+  }
+
+  async function share() {
+    const url = window.location.href;
+    try {
+      if (navigator.share) return await navigator.share({ title: product.name, url });
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {}
   }
 
   return (
     <div className="mt-6">
-      <div className="flex items-baseline gap-3">
-        <span className="font-display text-4xl font-semibold text-wine">{pkr(price)}</span>
-        {product.discount > 0 && <span className="text-lg text-muted line-through">{pkr(product.price)}</span>}
-      </div>
+      <span className="font-display text-4xl font-semibold text-wine"><Price value={price} /></span>
 
       {groups.map(([g, opts]) => (
         <div key={g} className="mt-6">
@@ -127,12 +215,32 @@ export default function BuyBox({ product }) {
                 className={`rounded-full border px-4 py-2 text-sm transition ${chosen[g] === o.value ? 'border-wine bg-wine text-white' : 'border-ink/15 bg-white hover:border-wine'}`}
               >
                 {o.label || o.value}
-                {o.price ? <span className="ml-1 opacity-70">+{pkr(o.price)}</span> : null}
+                {o.price ? <span className="ml-1 opacity-70">+<Price value={o.price} /></span> : null}
               </button>
             ))}
           </div>
         </div>
       ))}
+
+      {product.modifiers?.length > 0 && (
+        <div className="mt-6">
+          <div className="mb-2 text-sm font-semibold">Add-ons</div>
+          <div className="space-y-2">
+            {product.modifiers.map((m) => (
+              <label key={m.value} className="flex cursor-pointer items-center gap-3 rounded-xl border border-ink/10 bg-white p-3 text-sm">
+                <input
+                  type="checkbox"
+                  className="accent-[#740000]"
+                  checked={mods.includes(m.value)}
+                  onChange={(e) => setMods((l) => (e.target.checked ? [...l, m.value] : l.filter((x) => x !== m.value)))}
+                />
+                <span className="flex-1">{m.value}</span>
+                {m.price ? <span className="font-semibold text-wine">+<Price value={m.price} /></span> : null}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
 
       {product.form?.fields?.length > 0 && (
         <div className="mt-6 space-y-3 rounded-2xl bg-blush/60 p-4">
@@ -163,28 +271,24 @@ export default function BuyBox({ product }) {
         </div>
       )}
 
-      <div className="mt-8 flex flex-wrap items-center gap-3">
-        <div className="flex items-center rounded-full border border-ink/15 bg-white">
-          <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} className="p-3" aria-label="Decrease"><IconMinus width={16} height={16} /></button>
-          <span className="w-8 text-center font-semibold">{qty}</span>
-          <button type="button" onClick={() => setQty((q) => q + 1)} className="p-3" aria-label="Increase"><IconPlus width={16} height={16} /></button>
-        </div>
-        <button onClick={() => addToCart(false)} className="btn-ghost flex-1 py-3.5">
+      <div className="mt-8 grid gap-3 sm:grid-cols-3">
+        <button onClick={addToCart} className="btn-wine py-3.5">
           <IconBag width={18} height={18} /> Add to cart
         </button>
-        <button onClick={() => addToCart(true)} className="btn-wine w-full py-4 text-base sm:w-auto sm:flex-1">
-          Buy now
+        <a
+          href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(`Hi, I want to order: ${product.name}`)}`}
+          target="_blank"
+          rel="noreferrer"
+          className="btn-wine bg-[#25D366]! py-3.5 shadow-none hover:bg-[#1ea952]!"
+        >
+          <IconWhatsApp width={18} height={18} /> WhatsApp
+        </a>
+        <button onClick={share} className="btn-ghost py-3.5">
+          <IconShare width={18} height={18} /> {copied ? 'Link copied' : 'Share'}
         </button>
       </div>
       {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+      {added && <AddedPopup cartKey={added} suggestions={suggestions} onClose={() => setAdded(null)} />}
     </div>
-  );
-}
-
-export function WhatsAppOrder({ number, name }) {
-  return (
-    <a href={`https://wa.me/${number}?text=${encodeURIComponent(`Hi, I want to order: ${name}`)}`} className="mt-3 flex items-center justify-center gap-2 text-sm font-semibold text-[#128C7E]">
-      <IconWhatsApp width={18} height={18} /> Order on WhatsApp
-    </a>
   );
 }

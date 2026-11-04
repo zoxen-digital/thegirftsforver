@@ -16,6 +16,8 @@ export const getSite = cache(async () => {
     whatsapp: (w?.whatsapp || process.env.NEXT_PUBLIC_WHATSAPP || '923001234567').replace(/\D/g, ''),
     email: w?.email || 'hello@thegiftsforever.com',
     address: w?.address || 'Karachi, Pakistan',
+    bankDetails: w?.bankDetails || '',
+    social: { facebook: w?.facebook, instagram: w?.instagram, tiktok: w?.tiktok, youtube: w?.youtube, twitter: w?.twitter },
   };
 });
 
@@ -98,6 +100,32 @@ export async function getRelated(product, limit = 8) {
       .lean()
   );
 }
+
+/** Products offered in the add-to-cart popup: the chosen suggestion category, else the product's own. */
+export async function getSuggestions(product, limit = 4) {
+  await dbConnect();
+  const cat = product.suggestionCategory || product.category?._id || product.category;
+  if (!cat) return [];
+  return plain(
+    await Product.find({ ...visible, _id: { $ne: product._id }, $or: [{ category: cat }, { categories: cat }] }, CARD)
+      .sort({ featured: -1, createdAt: -1 })
+      .limit(limit)
+      .lean()
+  );
+}
+
+const FALLBACK_RATES = { PKR: 1, USD: 0.0036, GBP: 0.0027, EUR: 0.0031, AED: 0.013, SAR: 0.0135, CAD: 0.005, AUD: 0.0055 };
+
+/** PKR exchange rates, refreshed twice a day. */
+export const getRates = cache(async () => {
+  try {
+    const res = await fetch('https://open.er-api.com/v6/latest/PKR', { next: { revalidate: 43200 } });
+    const { rates } = await res.json();
+    return Object.fromEntries(Object.keys(FALLBACK_RATES).map((c) => [c, rates?.[c] || FALLBACK_RATES[c]]));
+  } catch {
+    return FALLBACK_RATES;
+  }
+});
 
 export async function searchProducts(q, limit = 48) {
   await dbConnect();

@@ -16,10 +16,10 @@ export default async function OrderSuccess({ params }) {
         <h1 className="mt-6 font-display text-4xl font-semibold">Thank you!</h1>
         <p className="mt-3 text-muted">Your order <b className="text-ink">#{id}</b> has been placed. Our team will confirm it on WhatsApp shortly.</p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <a href={`https://wa.me/${site.whatsapp}?text=${encodeURIComponent(`Hi! I just placed order #${id}`)}`} className="btn-wine bg-[#25D366] shadow-none hover:bg-[#1ea952]">
+          <a href={`https://wa.me/${site.whatsapp}?text=${encodeURIComponent(`Hi! I just placed order #${id}`)}`} className="btn-wine bg-[#25D366]! shadow-none hover:bg-[#1ea952]!">
             <IconWhatsApp width={18} height={18} /> Confirm on WhatsApp
           </a>
-          <Link href="/track-order" className="btn-ghost">Track order</Link>
+          <Link href="/categories" className="btn-ghost">Continue shopping</Link>
         </div>
       </div>
     </div>

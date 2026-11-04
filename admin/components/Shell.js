@@ -43,7 +43,7 @@ function playChime() {
       g.connect(ctx.destination);
       const t = ctx.currentTime + i * 0.18;
       g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.3, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.9, t + 0.02);
       g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
       o.start(t);
       o.stop(t + 0.4);
@@ -97,7 +97,8 @@ export default function Shell({ children, adminName }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [websites, setWebsites] = useState([]);
   const [site, setSite] = useState('');
-  const lastOrder = useRef(null);
+  const lastCount = useRef(null);
+  const [pending, setPending] = useState(0);
 
   useEffect(() => {
     fetch('/api/admin/options?type=websites')
@@ -111,22 +112,22 @@ export default function Shell({ children, adminName }) {
       .catch(() => {});
   }, []);
 
-  // poll for new orders and ring a chime
+  // orders stay "new" until confirmed: keep the alert up and keep ringing until then
   useEffect(() => {
     let stop = false;
     async function check() {
       try {
-        const d = await fetch('/api/admin/orders?limit=1').then((r) => r.json());
+        const d = await fetch('/api/admin/orders?limit=1&status=new').then((r) => r.json());
+        const count = d.total || 0;
+        setPending(count);
+        if (count > 0) playChime();
         const top = d.items?.[0];
-        if (top) {
-          if (lastOrder.current && lastOrder.current !== top._id) {
-            playChime();
-            toast(`New order #${top.oid} from ${top.customer?.name || 'customer'}`, 'info');
-          }
-          lastOrder.current = top._id;
+        if (top && lastCount.current !== null && count > lastCount.current) {
+          toast(`New order #${top.oid} from ${top.customer?.name || 'customer'}`, 'info');
         }
+        lastCount.current = count;
       } catch {}
-      if (!stop) setTimeout(check, 30000);
+      if (!stop) setTimeout(check, 15000);
     }
     check();
     return () => { stop = true; };
@@ -182,6 +183,11 @@ export default function Shell({ children, adminName }) {
             <IconMenu />
           </button>
           <div className="flex-1" />
+          {pending > 0 && (
+            <Link href="/orders" className="flex items-center gap-2 rounded bg-red-600 px-3 py-1.5 text-sm font-semibold text-white">
+              <IconBell width={16} height={16} /> {pending} new order{pending > 1 ? 's' : ''}
+            </Link>
+          )}
           <button onClick={playChime} className="hidden items-center gap-1 rounded border border-slate-400 px-2 py-1 text-xs text-slate-600 sm:flex">
             <IconBell width={14} height={14} /> Test Sound
           </button>

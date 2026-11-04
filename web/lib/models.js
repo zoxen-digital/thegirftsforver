@@ -35,6 +35,8 @@ StoredUploadSchema.index({ folder: 1, filename: 1 }, { unique: true });
 export const StoredUpload = model('StoredUpload', StoredUploadSchema);
 
 // ---------- catalog ----------
+const FaqItem = new Schema({ q: String, a: String }, { _id: false });
+
 const CategorySchema = new Schema(
   {
     cid: { type: Number, index: true },
@@ -53,6 +55,7 @@ const CategorySchema = new Schema(
     hidden: { type: Boolean, default: false },
     sort: { type: Number, default: 0 },
     homeSort: { type: Number, default: 0 },
+    faqs: [FaqItem],
   },
   { timestamps: true }
 );
@@ -91,6 +94,8 @@ const ProductSchema = new Schema(
       quantity: [VariationOption],
       suitColor: [VariationOption],
     },
+    modifiers: [VariationOption],
+    suggestionCategory: { type: ObjectId, ref: 'Category', default: null },
   },
   { timestamps: true }
 );
@@ -112,6 +117,7 @@ const BlogSchema = new Schema(
     excerpt: String,
     content: String,
     author: { type: String, default: 'Team TheGiftsForever' },
+    faqs: [FaqItem],
     metaTitle: String,
     metaDescription: String,
     metaKeywords: String,
@@ -236,7 +242,8 @@ const OrderSchema = new Schema(
     deliveryFee: { type: Number, default: 0 },
     total: { type: Number, default: 0 },
     cost: { type: Number, default: 0 },
-    paymentMethod: { type: String, default: 'cod' },
+    paymentMethod: { type: String, default: 'bank' },
+    paymentProof: String,
     status: { type: String, enum: ORDER_STATUSES, default: 'new', index: true },
     notes: String,
     website: String,
@@ -280,6 +287,12 @@ const WebsiteSchema = new Schema(
     whatsapp: String,
     email: String,
     address: String,
+    bankDetails: String,
+    facebook: String,
+    instagram: String,
+    tiktok: String,
+    youtube: String,
+    twitter: String,
     active: { type: Boolean, default: true },
   },
   { timestamps: true }

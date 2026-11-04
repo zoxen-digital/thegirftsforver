@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import Faqs from '@/components/Faqs';
 import { getBlog, getBlogs } from '@/lib/data';
 import { img } from '@/lib/utils';
 
@@ -29,6 +30,7 @@ export default async function BlogPost({ params }) {
         </div>
       </div>
       <div className="prose-gift container-x mt-12 max-w-3xl" dangerouslySetInnerHTML={{ __html: b.content || '' }} />
+      <Faqs items={b.faqs} />
       {more.length > 0 && (
         <section className="container-x mt-20">
           <h2 className="section-title mb-6 text-2xl">Keep reading</h2>

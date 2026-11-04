@@ -2,15 +2,18 @@
 
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --color-brand: #7a1f3d;
-  --color-brand-dark: #5c142c;
+  --color-brand: #740000;
+  --color-brand-dark: #520000;
   --color-accent: #c9a24a;
   --color-panel: #f1f5f9;
-  --color-thead: #4f8df5;
+  --color-thead: #740000;
 }
 
 :root {
   color-scheme: light;
+}
+@media (min-width: 1024px) {
+  html { zoom: 0.85; }
 }
 body {
   background: var(--color-panel);
@@ -33,10 +36,10 @@ body {
   @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition disabled:opacity-60;
 }
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition disabled:opacity-60 bg-blue-600 text-white hover:bg-blue-700;
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition disabled:opacity-60 bg-brand text-white hover:bg-brand-dark;
 }
 .btn-outline {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition disabled:opacity-60 border border-blue-500 bg-white text-blue-600 hover:bg-blue-50;
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition disabled:opacity-60 border border-brand bg-white text-brand hover:bg-red-50;
 }
 .pill {
   @apply inline-block rounded px-2 py-1 text-[11px] font-semibold text-white;

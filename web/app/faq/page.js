@@ -6,11 +6,11 @@ export const metadata = { title: 'FAQs', description: 'Answers about delivery, p
 
 const FAQ = [
   ['Do you offer same-day delivery?', 'Yes. Orders placed before 4 PM are delivered the same day in Karachi. Other major cities receive gifts within 24–48 hours.'],
-  ['Can I order from outside Pakistan?', 'Absolutely — most of our customers send gifts from the UAE, UK, USA and Canada. Pay by bank transfer or let the receiver pay cash on delivery.'],
+  ['Can I order from outside Pakistan?', 'Absolutely — most of our customers send gifts from the UAE, UK, USA and Canada. Pay by bank transfer and upload your payment screenshot at checkout.'],
   ['Will I get a photo of the delivery?', 'Yes, we WhatsApp you a photo of your gift before dispatch and once it has been delivered (with the receiver’s permission).'],
   ['Can I add a personal message?', 'Every order includes a complimentary card. Add your message at checkout and we’ll handwrite it.'],
   ['How do personalised gifts work?', 'For photo frames, mugs and custom boxes you upload your photos on the product page. Our designers share a preview before printing when needed.'],
-  ['What payment methods do you accept?', 'Cash on delivery, bank transfer, JazzCash and EasyPaisa. Card payments are available on request.'],
+  ['What payment methods do you accept?', 'Bank transfer. Upload your payment screenshot at checkout and we will confirm your order.'],
   ['What if the flowers aren’t fresh?', 'We prepare flowers on the day of delivery. If anything isn’t perfect, send us a photo within 12 hours and we’ll replace it free.'],
   ['Can I schedule a midnight surprise?', 'Yes, choose the midnight slot at checkout for Karachi, Lahore and Islamabad (a small surcharge may apply).'],
 ];

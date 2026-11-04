@@ -5,14 +5,15 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Logo from './Logo';
 import { useCart } from './CartProvider';
-import { IconBag, IconMenu, IconPhone, IconSearch, IconTruck, IconWhatsApp, IconX } from './Icons';
+import { CurrencySelect } from './Currency';
+import { IconBag, IconMail, IconMenu, IconPhone, IconSearch, IconWhatsApp, IconX, SOCIALS } from './Icons';
+
 
 export default function HeaderClient({ menu, site }) {
   const { count } = useCart();
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState(false);
   const [q, setQ] = useState('');
   const [scrolled, setScrolled] = useState(false);
 
@@ -25,7 +26,6 @@ export default function HeaderClient({ menu, site }) {
 
   useEffect(() => {
     setOpen(false);
-    setSearch(false);
   }, [pathname]);
 
   function submit(e) {
@@ -41,63 +41,63 @@ export default function HeaderClient({ menu, site }) {
     ['Contact', '/contact'],
   ];
 
+  const searchBox = (
+    <form onSubmit={submit} className="flex w-full items-center gap-2 rounded-full border border-ink/10 bg-white py-1 pl-4 pr-1 shadow-sm">
+      <IconSearch width={18} height={18} className="shrink-0 text-muted" />
+      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search roses, chocolates, cakes…" className="min-w-0 flex-1 bg-transparent py-1.5 text-sm outline-none" />
+      <button className="rounded-full bg-wine px-4 py-1.5 text-sm font-semibold text-white">Search</button>
+    </form>
+  );
+
   return (
     <>
       <div className="bg-wine text-[12.5px] text-white/90">
         <div className="container-x flex h-9 items-center justify-between gap-4">
-          <span className="flex items-center gap-2 truncate">
-            <IconTruck width={16} height={16} className="shrink-0 text-gold" />
-            Same-day gift delivery across Karachi · Nationwide in 24–48 hrs
-          </span>
-          <div className="hidden items-center gap-5 sm:flex">
-            <a href={`tel:${site.phone.replace(/\s/g, '')}`} className="flex items-center gap-1.5 hover:text-white">
+          <div className="flex min-w-0 items-center gap-4">
+            <a href={`tel:${site.phone.replace(/\s/g, '')}`} className="flex shrink-0 items-center gap-1.5 hover:text-white">
               <IconPhone width={14} height={14} /> {site.phone}
             </a>
-            <Link href="/track-order" className="hover:text-white">Track order</Link>
+            <a href={`mailto:${site.email}`} className="hidden items-center gap-1.5 hover:text-white sm:flex">
+              <IconMail width={14} height={14} /> {site.email}
+            </a>
+          </div>
+          <div className="flex items-center gap-3">
+            {SOCIALS.map(([k, I]) => (
+              <a key={k} href={site.social[k] || '#'} target="_blank" rel="noreferrer" aria-label={k} className="hover:text-white">
+                <I width={15} height={15} />
+              </a>
+            ))}
           </div>
         </div>
       </div>
 
-      <header className={`sticky top-0 z-40 border-b transition ${scrolled ? 'border-ink/5 bg-cream/90 shadow-sm backdrop-blur-md' : 'border-transparent bg-cream'}`}>
+      <header className={`sticky top-0 z-40 border-b transition ${scrolled ? 'border-ink/5 bg-cream/90 shadow-sm backdrop-blur-md' : 'border-ink/5 bg-cream'}`}>
         <div className="container-x flex h-[76px] items-center gap-4">
           <button onClick={() => setOpen(true)} className="-ml-1 p-1 xl:hidden" aria-label="Open menu">
             <IconMenu />
           </button>
           <Logo />
-          <nav className="ml-8 hidden flex-1 items-center gap-6 xl:flex">
-            {links.map(([l, h]) => (
-              <Link
-                key={h}
-                href={h}
-                className={`relative whitespace-nowrap text-[14.5px] font-medium transition hover:text-wine ${pathname === h ? 'text-wine' : 'text-ink/80'} after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-gold after:transition hover:after:scale-x-100`}
-              >
-                {l}
-              </Link>
-            ))}
-          </nav>
-          <div className="ml-auto flex items-center gap-1 sm:gap-2">
-            <button onClick={() => setSearch((s) => !s)} className="rounded-full p-2.5 hover:bg-blush" aria-label="Search">
-              <IconSearch />
-            </button>
+          <div className="mx-auto hidden w-full max-w-xl md:block">{searchBox}</div>
+          <div className="ml-auto flex items-center gap-2 md:ml-0">
+            <CurrencySelect />
             <Link href="/cart" className="relative rounded-full p-2.5 hover:bg-blush" aria-label="Cart">
               <IconBag />
               {count > 0 && (
-                <span className="absolute right-0.5 top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 text-[11px] font-bold text-ink">
+                <span className="absolute right-0.5 top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-wine px-1 text-[11px] font-bold text-white">
                   {count}
                 </span>
               )}
             </Link>
           </div>
         </div>
-        {search && (
-          <form onSubmit={submit} className="container-x animate-rise pb-4">
-            <div className="flex items-center gap-2 rounded-full border border-ink/10 bg-white px-5 py-2 shadow-sm">
-              <IconSearch width={18} height={18} className="text-muted" />
-              <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search roses, chocolates, cakes, hampers…" className="flex-1 bg-transparent py-1.5 outline-none" />
-              <button className="rounded-full bg-wine px-4 py-1.5 text-sm font-semibold text-white">Search</button>
-            </div>
-          </form>
-        )}
+        <div className="container-x pb-3 md:hidden">{searchBox}</div>
+        <nav className="container-x hidden h-11 items-center justify-center gap-7 border-t border-ink/5 xl:flex">
+          {links.map(([l, h]) => (
+            <Link key={h} href={h} className={`whitespace-nowrap text-[14.5px] font-medium transition hover:text-wine ${pathname === h ? 'text-wine' : 'text-ink/80'}`}>
+              {l}
+            </Link>
+          ))}
+        </nav>
       </header>
 
       {/* mobile drawer */}
