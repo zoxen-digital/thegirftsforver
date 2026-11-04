@@ -121,7 +121,7 @@ function AddedPopup({ cartKey, suggestions, onClose }) {
                   <span className="line-clamp-1 flex-1 text-sm">{s.name}</span>
                   <span className="text-sm font-semibold text-wine"><Price value={salePrice(s.price)} /></span>
                   <button
-                    onClick={() => add({ productId: s._id, slug: s.slug, name: s.name, image: img(s.coverImage), price: salePrice(s.price), qty: 1, variations: {}, options: {} }, { silent: true })}
+                    onClick={() => add({ productId: s._id, slug: s.slug, name: s.name, image: img(s.coverImage), price: salePrice(s.price), qty: 1, variations: {}, freeDelivery: !!s.freeDelivery, options: {} }, { silent: true })}
                     className="rounded-full bg-wine p-1.5 text-white"
                     aria-label={`Add ${s.name}`}
                   >
@@ -178,6 +178,7 @@ export default function BuyBox({ product, whatsapp, suggestions = [] }) {
       qty: 1,
       variations: chosen,
       modifiers: mods,
+      freeDelivery: !!product.freeDelivery,
       options,
     };
   }

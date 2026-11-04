@@ -233,10 +233,12 @@ const OrderSchema = new Schema(
     oid: { type: Number, index: true },
     items: [OrderItemSchema],
     customer: { name: String, phone: String, email: String, country: String },
-    receiver: { name: String, phone: String, address: String, city: String },
+    receiver: { name: String, phone: String, address: String, province: String, city: String },
     deliveryDate: String,
     deliveryTime: String,
     message: String,
+    instructions: String,
+    deliveryOption: String,
     image: String,
     subtotal: { type: Number, default: 0 },
     deliveryFee: { type: Number, default: 0 },
@@ -286,6 +288,9 @@ const AdminCredentialSchema = new Schema(
 export const AdminCredential = model('AdminCredential', AdminCredentialSchema);
 
 // ---------- websites (multi-site switcher) ----------
+const DeliveryOption = new Schema({ name: String, price: Number }, { _id: false });
+const PaymentOption = new Schema({ name: String, details: String }, { _id: false });
+
 const WebsiteSchema = new Schema(
   {
     name: { type: String, required: true },
@@ -295,6 +300,9 @@ const WebsiteSchema = new Schema(
     email: String,
     address: String,
     bankDetails: String,
+    deliveryOptions: [DeliveryOption],
+    freeDeliveryOver: { type: Number, default: 10000 },
+    paymentMethods: [PaymentOption],
     facebook: String,
     instagram: String,
     tiktok: String,

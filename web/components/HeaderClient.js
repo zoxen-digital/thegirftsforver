@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import Logo from './Logo';
 import { useCart } from './CartProvider';
 import { CurrencySelect } from './Currency';
-import { IconBag, IconMail, IconMenu, IconPhone, IconSearch, IconWhatsApp, IconX, SOCIALS } from './Icons';
+import { IconCart, IconMail, IconMenu, IconPhone, IconSearch, IconWhatsApp, IconX, SOCIALS } from './Icons';
 
 
 export default function HeaderClient({ menu, site }) {
@@ -80,10 +80,10 @@ export default function HeaderClient({ menu, site }) {
           <div className="mx-auto hidden w-full max-w-xl md:block">{searchBox}</div>
           <div className="ml-auto flex items-center gap-2 md:ml-0">
             <CurrencySelect />
-            <Link href="/cart" className="relative rounded-full p-2.5 hover:bg-blush" aria-label="Cart">
-              <IconBag />
+            <Link href="/cart" className="relative ml-2 p-1 text-ink transition hover:text-wine" aria-label="Cart">
+              <IconCart width={34} height={34} strokeWidth={2} />
               {count > 0 && (
-                <span className="absolute right-0.5 top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-wine px-1 text-[11px] font-bold text-white">
+                <span className="absolute -left-3 top-2.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-wine px-1 text-[11px] font-bold text-white">
                   {count}
                 </span>
               )}

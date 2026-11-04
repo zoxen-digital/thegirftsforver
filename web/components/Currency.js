@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { IconChevronDown, IconGlobe } from './Icons';
 
 const KEY = 'tgf_currency';
 const CurrencyCtx = createContext({ code: 'PKR', setCode: () => {}, format: (n) => String(n), codes: ['PKR'] });
@@ -46,8 +47,13 @@ export function Price({ value }) {
 export function CurrencySelect({ className = '' }) {
   const { code, codes, setCode } = useCurrency();
   return (
-    <select aria-label="Currency" value={code} onChange={(e) => setCode(e.target.value)} className={`rounded-full border border-ink/15 bg-white px-3 py-2 text-sm font-medium ${className}`}>
-      {codes.map((c) => <option key={c}>{c}</option>)}
-    </select>
+    <label className={`relative flex items-center gap-2 rounded-lg bg-wine py-2.5 pl-3 pr-2.5 text-sm font-bold text-white transition hover:bg-wine-dark ${className}`}>
+      <IconGlobe width={20} height={20} />
+      {code}
+      <IconChevronDown width={16} height={16} />
+      <select aria-label="Currency" value={code} onChange={(e) => setCode(e.target.value)} className="absolute inset-0 cursor-pointer opacity-0">
+        {codes.map((c) => <option key={c} className="text-ink">{c}</option>)}
+      </select>
+    </label>
   );
 }

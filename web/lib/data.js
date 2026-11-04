@@ -7,6 +7,8 @@ const plain = (v) => JSON.parse(JSON.stringify(v));
 const visible = { active: true, hidden: { $ne: true } };
 const CARD = 'name slug coverImage price discount freeDelivery category';
 
+const DEFAULT_DELIVERY = [{ name: 'Standard Delivery', price: 600 }, { name: 'Sameday Delivery', price: 800 }, { name: 'Midnight Delivery (10 to 12 PM)', price: 1000 }];
+
 export const getSite = cache(async () => {
   await dbConnect();
   const w = await Website.findOne({ active: true }).sort({ createdAt: 1 }).lean();
@@ -16,7 +18,11 @@ export const getSite = cache(async () => {
     whatsapp: (w?.whatsapp || process.env.NEXT_PUBLIC_WHATSAPP || '923001234567').replace(/\D/g, ''),
     email: w?.email || 'hello@thegiftsforever.com',
     address: w?.address || 'Karachi, Pakistan',
-    bankDetails: w?.bankDetails || '',
+    delivery: w?.deliveryOptions?.length ? w.deliveryOptions.map(({ name, price }) => ({ name, price })) : DEFAULT_DELIVERY,
+    freeOver: w?.freeDeliveryOver ?? 10000,
+    payments: w?.paymentMethods?.length
+      ? w.paymentMethods.map(({ name, details }) => ({ name, details }))
+      : [{ name: 'Bank Transfer', details: w?.bankDetails || '' }],
     social: { facebook: w?.facebook, instagram: w?.instagram, tiktok: w?.tiktok, youtube: w?.youtube, twitter: w?.twitter },
   };
 });

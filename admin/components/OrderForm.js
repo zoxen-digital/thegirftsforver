@@ -19,7 +19,7 @@ const empty = {
   message: '',
   image: '',
   deliveryFee: 0,
-  paymentMethod: 'bank',
+  paymentMethod: 'Bank Transfer',
   status: 'new',
   notes: '',
 };
@@ -119,9 +119,7 @@ export default function OrderForm({ id }) {
             <div><label className="label">Delivery Fee</label>{inp(o.deliveryFee, setTop('deliveryFee'), '0', 'number')}</div>
             <div>
               <label className="label">Payment</label>
-              <select className="input" value={o.paymentMethod} onChange={setTop('paymentMethod')}>
-                <option value="bank">Bank transfer</option><option value="card">Card</option>
-              </select>
+              {inp(o.paymentMethod, setTop('paymentMethod'), 'Payment method')}
             </div>
             <div>
               <label className="label">Status</label>

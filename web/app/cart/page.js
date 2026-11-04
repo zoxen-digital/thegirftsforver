@@ -5,13 +5,15 @@ import Link from 'next/link';
 import { useCart } from '@/components/CartProvider';
 import { IconArrowRight, IconBag, IconMinus, IconPlus, IconTrash } from '@/components/Icons';
 import { Price } from '@/components/Currency';
+import Steps from '@/components/Steps';
 
 export default function CartPage() {
   const { items, ready, setQty, remove, subtotal } = useCart();
 
   return (
     <div className="container-x pt-10">
-      <h1 className="font-display text-4xl font-semibold">Your cart</h1>
+      <Steps current={1} />
+      <h1 className="mt-10 font-display text-4xl font-semibold">Your cart</h1>
       {!ready ? null : items.length === 0 ? (
         <div className="mt-10 flex flex-col items-center gap-4 rounded-3xl bg-white p-16 text-center">
           <IconBag width={40} height={40} className="text-wine" />

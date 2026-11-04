@@ -43,11 +43,12 @@ function OrderView({ o }) {
         </div>
         <div>
           <h4 className="mb-2 font-bold text-brand">Receiver</h4>
-          <Row k="Name" v={o.receiver?.name} /><Row k="Phone" v={o.receiver?.phone} /><Row k="City" v={o.receiver?.city} /><Row k="Address" v={o.receiver?.address} />
-          <Row k="Delivery date" v={o.deliveryDate} /><Row k="Delivery time" v={o.deliveryTime} />
+          <Row k="Name" v={o.receiver?.name} /><Row k="Phone" v={o.receiver?.phone} /><Row k="Province" v={o.receiver?.province} /><Row k="City" v={o.receiver?.city} /><Row k="Address" v={o.receiver?.address} />
+          <Row k="Delivery date" v={o.deliveryDate} /><Row k="Delivery time" v={o.deliveryTime} /><Row k="Delivery option" v={o.deliveryOption} />
         </div>
       </div>
       {o.message && <div className="mt-4 rounded bg-rose-50 p-3"><b>Card message:</b> {o.message}</div>}
+      {o.instructions && <div className="mt-2 rounded bg-amber-50 p-3"><b>Instructions:</b> {o.instructions}</div>}
       <table className="mt-4 w-full text-left">
         <thead><tr className="border-b"><th className="py-2">Item</th><th>Qty</th><th className="text-right">Price</th></tr></thead>
         <tbody>

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getSite } from '@/lib/data';
 import { dbConnect } from '@/lib/db';
 import { Order, Product, nextSeq } from '@/lib/models';
 import { deliveryFee, salePrice } from '@/lib/utils';
@@ -13,7 +14,7 @@ export async function POST(req) {
   if (!body?.items?.length) return NextResponse.json({ error: 'Your cart is empty' }, { status: 400 });
 
   const customer = { name: str(body.customer?.name, 80), phone: str(body.customer?.phone, 30), email: str(body.customer?.email, 120), country: str(body.customer?.country, 60) };
-  const receiver = { name: str(body.receiver?.name, 80), phone: str(body.receiver?.phone, 30), address: str(body.receiver?.address, 500), city: str(body.receiver?.city, 60) };
+  const receiver = { name: str(body.receiver?.name, 80), phone: str(body.receiver?.phone, 30), address: str(body.receiver?.address, 500), province: str(body.receiver?.province, 60), city: str(body.receiver?.city, 60) };
   if (!customer.name || !customer.phone || !receiver.name || !receiver.phone || !receiver.address || !receiver.city) {
     return NextResponse.json({ error: 'Please fill all required fields' }, { status: 400 });
   }
@@ -44,7 +45,10 @@ export async function POST(req) {
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const allFree = items.every((i) => byId[String(i.product)]?.freeDelivery);
-  const fee = deliveryFee(receiver.city, subtotal, allFree);
+  const site = await getSite();
+  const option = site.delivery.find((d) => d.name === body.deliveryOption) || site.delivery[0];
+  const payment = site.payments.find((p) => p.name === body.paymentMethod) || site.payments[0];
+  const fee = deliveryFee(option, subtotal, site.freeOver, allFree);
   const order = await Order.create({
     oid: await nextSeq('order'),
     items,
@@ -53,11 +57,13 @@ export async function POST(req) {
     deliveryDate: str(body.deliveryDate, 20),
     deliveryTime: str(body.deliveryTime, 40),
     message: str(body.message, 600),
+    instructions: str(body.instructions, 600),
+    deliveryOption: option.name,
     subtotal,
     deliveryFee: fee,
     total: subtotal + fee,
     cost: items.reduce((s, i) => s + i.cost * i.qty, 0),
-    paymentMethod: 'bank',
+    paymentMethod: payment.name,
     paymentProof,
     status: 'new',
     website: req.headers.get('host') || '',

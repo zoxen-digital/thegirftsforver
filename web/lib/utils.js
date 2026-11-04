@@ -28,12 +28,18 @@ export function img(url) {
   return url;
 }
 
-export const FREE_DELIVERY_OVER = 10000;
-export const KARACHI_FAR = 'Karachi - Bahria Town / Gulshan-e-Maymar';
-export const CITIES = ['Karachi', KARACHI_FAR, 'Lahore', 'Islamabad', 'Rawalpindi', 'Faisalabad', 'Multan', 'Hyderabad', 'Peshawar', 'Quetta', 'Sialkot', 'Gujranwala', 'Other'];
+export const PROVINCES = {
+  Sindh: ['Karachi', 'Hyderabad', 'Sukkur', 'Larkana', 'Nawabshah', 'Mirpur Khas', 'Other'],
+  Punjab: ['Lahore', 'Rawalpindi', 'Faisalabad', 'Multan', 'Sialkot', 'Gujranwala', 'Bahawalpur', 'Sargodha', 'Other'],
+  'Islamabad Capital Territory': ['Islamabad'],
+  'Khyber Pakhtunkhwa': ['Peshawar', 'Abbottabad', 'Mardan', 'Swat', 'Other'],
+  Balochistan: ['Quetta', 'Gwadar', 'Other'],
+  'Azad Kashmir': ['Muzaffarabad', 'Mirpur', 'Other'],
+  'Gilgit-Baltistan': ['Gilgit', 'Skardu', 'Other'],
+};
 
-export function deliveryFee(city, subtotal, freeDelivery = false) {
-  if (freeDelivery || subtotal >= FREE_DELIVERY_OVER) return 0;
-  if (city === KARACHI_FAR) return 2000;
-  return city === 'Karachi' ? 1000 : 600;
+/** Free when every item ships free, or the subtotal reaches the admin threshold (0 turns that off). */
+export function deliveryFee(option, subtotal, freeOver, allFree = false) {
+  if (allFree || (freeOver > 0 && subtotal >= freeOver)) return 0;
+  return Number(option?.price || 0);
 }

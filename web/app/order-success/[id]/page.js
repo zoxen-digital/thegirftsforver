@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { IconCheck, IconWhatsApp } from '@/components/Icons';
+import Steps from '@/components/Steps';
 import { getSite } from '@/lib/data';
 
 export const metadata = { title: 'Order placed', robots: { index: false } };
@@ -8,8 +9,9 @@ export default async function OrderSuccess({ params }) {
   const { id } = await params;
   const site = await getSite();
   return (
-    <div className="container-x pt-16">
-      <div className="mx-auto max-w-xl rounded-[32px] bg-white p-10 text-center shadow-sm">
+    <div className="container-x pt-10">
+      <Steps current={3} />
+      <div className="mx-auto mt-10 max-w-xl rounded-[32px] bg-white p-10 text-center shadow-sm">
         <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
           <IconCheck width={30} height={30} />
         </span>
