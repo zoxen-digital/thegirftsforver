@@ -150,18 +150,16 @@ export default async function Home() {
 function ProductRow({ row, priority }) {
   return (
     <section className="container-x mt-20">
-      <div className="mb-7 flex items-end justify-between gap-4">
-        <h2 className="section-title">{row.category.name}</h2>
-        <Link href={`/category/${row.category.slug}`} className="flex shrink-0 items-center gap-1.5 text-sm font-semibold text-wine">
-          View more <IconArrowRight width={16} height={16} />
-        </Link>
-      </div>
+      <h2 className="section-title mb-7">{row.category.name}</h2>
       <div className="no-scrollbar -mx-4 flex snap-x gap-4 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible sm:px-0 lg:grid-cols-4">
         {row.products.slice(0, 4).map((p, i) => (
           <div key={p._id} className="w-[64%] shrink-0 snap-start sm:w-auto">
             <ProductCard p={p} priority={priority && i < 2} />
           </div>
         ))}
+      </div>
+      <div className="mt-8 text-center">
+        <Link href={`/category/${row.category.slug}`} className="btn-wine">View more <IconArrowRight width={16} height={16} /></Link>
       </div>
     </section>
   );

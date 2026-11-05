@@ -58,10 +58,23 @@ function Checklist({ f, value = [], onChange }) {
 }
 
 function MultiSelect({ f, value = [], onChange }) {
-  const opts = useOptions(f.source);
+  const loaded = useOptions(f.source);
+  const [created, setCreated] = useState([]);
   const [q, setQ] = useState('');
+  const opts = [...loaded, ...created.filter((c) => !loaded.some((o) => o._id === c._id))];
   const ids = (value || []).map((v) => (typeof v === 'object' ? v._id : v));
   const chosen = opts.filter((o) => ids.includes(o._id));
+  const name = q.trim();
+  const exists = opts.some((o) => o.name.toLowerCase() === name.toLowerCase());
+
+  async function create() {
+    const res = await fetch(`/api/admin/${f.source}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok || !d.item) return;
+    setCreated((l) => [...l, d.item]);
+    onChange([...ids, d.item._id]);
+    setQ('');
+  }
   const rest = opts.filter((o) => !ids.includes(o._id) && o.name.toLowerCase().includes(q.toLowerCase()));
   return (
     <div className="rounded-lg border border-slate-300 p-2">
@@ -73,7 +86,10 @@ function MultiSelect({ f, value = [], onChange }) {
           </span>
         ))}
       </div>
-      <input className="w-full px-1 py-1 text-[15px] outline-none" placeholder="Select tags" value={q} onChange={(e) => setQ(e.target.value)} />
+      <input className="w-full px-1 py-1 text-[15px] outline-none" placeholder="Select or type a new tag" value={q} onChange={(e) => setQ(e.target.value)} />
+      {name && !exists && (
+        <button type="button" className="block w-full rounded px-2 py-1 text-left text-sm font-semibold text-brand hover:bg-slate-100" onClick={create}>+ Create “{name}”</button>
+      )}
       <div className="max-h-40 overflow-y-auto">
         {rest.slice(0, 50).map((o) => (
           <button key={o._id} type="button" className="block w-full rounded px-2 py-1 text-left text-sm hover:bg-slate-100" onClick={() => { onChange([...ids, o._id]); setQ(''); }}>

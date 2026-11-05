@@ -89,6 +89,7 @@ export async function getProduct(slug) {
   await dbConnect();
   const p = await Product.findOne({ slug, active: true })
     .populate('category', 'name slug')
+    .populate('tags', 'name')
     .populate({ path: 'form', populate: { path: 'fields' } })
     .lean();
   if (!p) return null;

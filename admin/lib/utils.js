@@ -13,7 +13,8 @@ export function money(n) {
   return 'Rs. ' + Number(n || 0).toLocaleString('en-PK', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-/** The entered price is what the customer pays: discounts are not applied. */
-export function salePrice(price) {
-  return Math.round(Number(price || 0));
+export function salePrice(price, discount) {
+  const p = Number(price || 0);
+  const d = Number(discount || 0);
+  return Math.round(p - (p * d) / 100);
 }

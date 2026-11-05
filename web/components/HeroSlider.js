@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import { img } from '@/lib/utils';
 import { IconArrowLeft, IconArrowRight } from './Icons';
 
+const strip = (html = '') => html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+
 export default function HeroSlider({ slides }) {
   const [i, setI] = useState(0);
   const n = slides.length;
@@ -27,12 +29,17 @@ export default function HeroSlider({ slides }) {
             <Image src={img(sl.image)} alt={sl.imageName || sl.title || 'Gift'} fill priority={k === 0} sizes="100vw" className="object-cover object-right" />
           </div>
         ))}
-        <div className="absolute inset-0 bg-gradient-to-r from-wine/75 via-wine/25 via-40% to-transparent to-70%" />
+        <div className="absolute inset-0 bg-gradient-to-r from-wine/90 via-wine/60 via-35% to-transparent to-70%" />
 
-        <div className="absolute bottom-6 left-5 sm:bottom-12 sm:left-12 lg:bottom-16 lg:left-20">
-          <Link href={s.link || '/categories'} className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold text-wine shadow-lg transition hover:bg-blush">
+        <div key={i} className="absolute inset-y-0 left-0 flex max-w-[75%] flex-col justify-center px-5 sm:max-w-xl sm:px-12 lg:px-20">
+          {s.eyebrow && <p className="animate-rise text-[10px] font-semibold uppercase tracking-[0.2em] text-white/85 sm:text-xs">{s.eyebrow}</p>}
+          {s.title && <h1 className="mt-2 animate-rise font-display text-2xl font-semibold leading-tight text-white sm:mt-3 sm:text-4xl lg:text-5xl">{s.title}</h1>}
+          {s.content && <p className="mt-2 line-clamp-2 animate-rise text-xs text-white/85 sm:mt-4 sm:line-clamp-none sm:text-base">{strip(s.content)}</p>}
+          <div className="mt-4 sm:mt-7">
+          <Link href={s.link || '/categories'} className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold sm:px-7 sm:py-3.5 text-wine shadow-lg transition hover:bg-blush">
             Shop now <IconArrowRight width={18} height={18} />
           </Link>
+          </div>
         </div>
 
         {n > 1 && (

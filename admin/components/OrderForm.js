@@ -48,7 +48,7 @@ export default function OrderForm({ id }) {
     if (!p) return;
     setO((x) => ({
       ...x,
-      items: [...x.items, { product: p._id, name: p.name, image: p.coverImage, price: salePrice(p.price), cost: p.costPrice || 0, qty: 1, options: {} }],
+      items: [...x.items, { product: p._id, name: p.name, image: p.coverImage, price: salePrice(p.price, p.discount), cost: p.costPrice || 0, qty: 1, options: {} }],
     }));
     setPick('');
   }
@@ -103,7 +103,7 @@ export default function OrderForm({ id }) {
           <div className="flex gap-2">
             <select className="input" value={pick} onChange={(e) => setPick(e.target.value)}>
               <option value="">-- Select product --</option>
-              {products.map((p) => <option key={p._id} value={p._id}>{p.name} — {money(salePrice(p.price))}</option>)}
+              {products.map((p) => <option key={p._id} value={p._id}>{p.name} — {money(salePrice(p.price, p.discount))}</option>)}
             </select>
             <button type="button" className="btn-primary" onClick={addItem}>Add</button>
           </div>

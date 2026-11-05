@@ -76,7 +76,6 @@ export default function CheckoutForm({ delivery, payments, freeOver }) {
 
   async function submit(e) {
     e.preventDefault();
-    if (!f.paymentProof) return setError('Please upload your payment screenshot.');
     setBusy(true);
     setError('');
     const receiver = gift ? f.receiver : { ...f.receiver, name: f.customer.name, phone: f.customer.phone };
@@ -214,7 +213,7 @@ export default function CheckoutForm({ delivery, payments, freeOver }) {
               })}
             </div>
             <div className="mt-4">
-              <PhotoInput label="Payment screenshot *" value={f.paymentProof} onChange={(u) => setF((x) => ({ ...x, paymentProof: u }))} />
+              <PhotoInput label="Payment screenshot" value={f.paymentProof} onChange={(u) => setF((x) => ({ ...x, paymentProof: u }))} />
             </div>
           </div>
 

@@ -37,7 +37,7 @@ export async function uploadCustomerPhoto(file) {
 
 /** Price for a product with the chosen variation values and modifiers (both are add-ons). */
 export function unitPrice(product, chosen, modifiers = []) {
-  let price = salePrice(product.price);
+  let price = salePrice(product.price, product.discount);
   for (const [group, val] of Object.entries(chosen || {})) {
     const opt = product.variations?.[group]?.find((o) => o.value === val);
     if (opt?.price) price += Number(opt.price);
@@ -119,9 +119,9 @@ function AddedPopup({ cartKey, suggestions, onClose }) {
                     <Image src={img(s.coverImage)} alt="" fill sizes="48px" className="object-cover" unoptimized={s.coverImage?.startsWith('/api/uploads/')} />
                   </div>
                   <span className="line-clamp-1 flex-1 text-sm">{s.name}</span>
-                  <span className="text-sm font-semibold text-wine"><Price value={salePrice(s.price)} /></span>
+                  <span className="text-sm font-semibold text-wine"><Price value={salePrice(s.price, s.discount)} /></span>
                   <button
-                    onClick={() => add({ productId: s._id, slug: s.slug, name: s.name, image: img(s.coverImage), price: salePrice(s.price), qty: 1, variations: {}, freeDelivery: !!s.freeDelivery, options: {} }, { silent: true })}
+                    onClick={() => add({ productId: s._id, slug: s.slug, name: s.name, image: img(s.coverImage), price: salePrice(s.price, s.discount), qty: 1, variations: {}, freeDelivery: !!s.freeDelivery, options: {} }, { silent: true })}
                     className="rounded-full bg-wine p-1.5 text-white"
                     aria-label={`Add ${s.name}`}
                   >
@@ -202,7 +202,10 @@ export default function BuyBox({ product, whatsapp, suggestions = [] }) {
 
   return (
     <div className="mt-6">
-      <span className="font-display text-4xl font-semibold text-wine"><Price value={price} /></span>
+      <div className="flex items-baseline gap-2">
+        <span className="font-display text-4xl font-semibold text-wine"><Price value={price} /></span>
+        {product.discount > 0 && <span className="text-lg font-semibold text-muted">{product.discount}% off</span>}
+      </div>
 
       {groups.map(([g, opts]) => (
         <div key={g} className="mt-6">
@@ -289,6 +292,7 @@ export default function BuyBox({ product, whatsapp, suggestions = [] }) {
         </button>
       </div>
       {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+      <p className="mt-5 rounded-xl bg-blush/60 p-3 text-sm">💝 Please Note: If an item is not available, we will replace it with a similar item of the same value.</p>
       {added && <AddedPopup cartKey={added} suggestions={suggestions} onClose={() => setAdded(null)} />}
     </div>
   );

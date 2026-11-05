@@ -15,7 +15,7 @@ const MENU = [
   {
     label: 'Category',
     icon: IconLayers,
-    children: [['All Categories', '/categories'], ['Add Category', '/categories/new'], ['Sort Categories', '/category-sort'], ['Home Sort', '/category-sort?type=home']],
+    children: [['All Categories', '/categories'], ['Add Category', '/categories/new'], ['Add Sub Category', '/categories/new?sub=1'], ['Sort Categories', '/category-sort'], ['Home Sort', '/category-sort?type=home']],
   },
   { label: 'Blogs', icon: IconLayers, children: [['All Blogs', '/blogs'], ['Add Blog', '/blogs/new']] },
   { label: 'Content Pages', icon: IconLayers, children: [['All Pages', '/pages'], ['Add Page', '/pages/new']] },
@@ -27,7 +27,7 @@ const MENU = [
   { label: 'Google Reviews', icon: IconChat, children: [['All Reviews', '/google-reviews'], ['Add Review', '/google-reviews/new']] },
   { label: 'WhatsApp Reviews', icon: IconImage, children: [['All Reviews', '/whatsapp-reviews'], ['Add Review', '/whatsapp-reviews/new']] },
   { label: 'Forms', icon: IconLayers, children: [['All Forms', '/forms'], ['Add Form', '/forms/new']] },
-  { label: 'Tags', href: '/tags', icon: IconImage },
+  { label: 'Tags', icon: IconImage, children: [['All Tags', '/tags'], ['Add Tag', '/tags/new']] },
   { label: 'Websites', icon: IconGlobe, children: [['All Websites', '/websites'], ['Add Website', '/websites/new']] },
   { label: 'Change Password', href: '/change-password', icon: IconLock },
 ];

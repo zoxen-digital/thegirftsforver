@@ -5,6 +5,7 @@ import BuyBox from '@/components/BuyBox';
 import ProductCard from '@/components/ProductCard';
 import Reviews from '@/components/Reviews';
 import { getProduct, getRelated, getReviews, getSite, getSuggestions } from '@/lib/data';
+import { IconStar } from '@/components/Icons';
 import { img, salePrice } from '@/lib/utils';
 
 export async function generateMetadata({ params }) {
@@ -36,7 +37,8 @@ export default async function ProductPage({ params }) {
   ]);
   const images = [p.coverImage, ...(p.gallery || [])].filter(Boolean).map(img);
   const yt = youtubeId(p.youtubeUrl);
-  const sale = salePrice(p.price);
+  const sale = salePrice(p.price, p.discount);
+  const stars = reviews.length ? Math.round(reviews.reduce((s, r) => s + (r.rating || 5), 0) / reviews.length) : 5;
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -59,9 +61,10 @@ export default async function ProductPage({ params }) {
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
         <Gallery images={images.length ? images : ['/placeholder.svg']} alt={p.name} />
         <div>
-          {p.category && <Link href={`/category/${p.category.slug}`} className="eyebrow">{p.category.name}</Link>}
-          <h1 className="mt-3 font-display text-3xl font-semibold leading-tight sm:text-4xl">{p.name}</h1>
-          {p.shortDescription && <div className="prose-gift mt-4 text-[15px]" dangerouslySetInnerHTML={{ __html: p.shortDescription }} />}
+          <h1 className="font-display text-3xl font-semibold leading-tight sm:text-4xl">{p.name}</h1>
+          <div className="mt-3 flex gap-0.5" aria-label={`${stars} out of 5 stars`}>
+            {[1, 2, 3, 4, 5].map((n) => <IconStar key={n} filled={n <= stars} width={20} height={20} />)}
+          </div>
           <BuyBox
             product={{
               _id: p._id,
@@ -69,6 +72,7 @@ export default async function ProductPage({ params }) {
               slug: p.slug,
               image: images[0],
               price: p.price,
+              discount: p.discount,
               variations: p.variations || {},
               modifiers: p.modifiers || [],
               imagesNeed: p.imagesNeed || 0,
@@ -78,6 +82,12 @@ export default async function ProductPage({ params }) {
             whatsapp={site.whatsapp}
             suggestions={suggestions}
           />
+          {p.shortDescription && <div className="prose-gift mt-6 text-[15px]" dangerouslySetInnerHTML={{ __html: p.shortDescription }} />}
+          {p.tags?.length > 0 && (
+            <div className="mt-5 flex flex-wrap gap-2">
+              {p.tags.map((t) => <span key={t._id} className="rounded-full bg-blush px-3 py-1 text-xs font-medium text-wine">{t.name}</span>)}
+            </div>
+          )}
         </div>
       </div>
 

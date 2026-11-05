@@ -19,8 +19,8 @@ export async function POST(req) {
     return NextResponse.json({ error: 'Please fill all required fields' }, { status: 400 });
   }
 
-  const paymentProof = str(body.paymentProof, 200);
-  if (!paymentProof.startsWith('/api/uploads/misc/')) return NextResponse.json({ error: 'Please upload your payment screenshot' }, { status: 400 });
+  const proof = str(body.paymentProof, 200);
+  const paymentProof = proof.startsWith('/api/uploads/misc/') ? proof : '';
 
   await dbConnect();
   const ids = body.items.slice(0, 50).map((i) => i.productId);
@@ -31,7 +31,7 @@ export async function POST(req) {
   for (const it of body.items.slice(0, 50)) {
     const p = byId[it.productId];
     if (!p) continue;
-    let price = salePrice(p.price);
+    let price = salePrice(p.price, p.discount);
     for (const [group, val] of Object.entries(it.variations || {})) {
       const opt = p.variations?.[group]?.find((o) => o.value === val);
       if (opt?.price) price += Number(opt.price);
